@@ -57,6 +57,7 @@ resources:
 
 </details>
 
+
 ## Available configuration options:
 
 - `entity` _string_: The thermostat entity id **required**
