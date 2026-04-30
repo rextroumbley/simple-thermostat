@@ -48,16 +48,6 @@ const ICONS = {
   MINUS: 'mdi:minus',
 }
 
-type ModeIcons = {
-  [key: string]: string
-}
-
-interface ModeOptions {
-  names?: boolean
-  icons?: boolean
-  headings?: boolean
-}
-
 const DEFAULT_HIDE = {
   temperature: false,
   state: false,
@@ -163,13 +153,11 @@ export default class SimpleThermostat extends LitElement {
       this.renderRoot.querySelectorAll('[with-hass]')
     )
     for (const child of Array.from(patchHass)) {
-      // Forward attributes to properties
       Array.from(child.attributes).forEach((attr) => {
         if (attr.name.startsWith('fwd-')) {
           child[attr.name.replace('fwd-', '')] = attr.value
         }
       })
-      // Always forward hass
       child.hass = this._hass
     }
   }
@@ -180,7 +168,7 @@ export default class SimpleThermostat extends LitElement {
     }
 
     const entity = hass.states[this.config.entity]
-    if (typeof entity === undefined) {
+    if (typeof entity === undefined || !entity) {
       return
     }
 
@@ -193,14 +181,8 @@ export default class SimpleThermostat extends LitElement {
     this.service = parseService(this.config?.service ?? false)
 
     const attributes = entity.attributes
-
     let values = parseSetpoints(this.config?.setpoints ?? null, attributes)
 
-    // If we are updating the values, and they are now equal
-    // we can safely assume we've been able to update the set points
-    // in HA and remove the updating flag
-    // If we are not updating we take the values we get from HA
-    // because it means they changed elsewhere
     if (this._updatingValues && isEqual(values, this._values)) {
       this._updatingValues = false
     } else if (!this._updatingValues) {
@@ -243,7 +225,6 @@ export default class SimpleThermostat extends LitElement {
       controlModes = buildBasicModes(DEFAULT_CONTROL)
     }
 
-    // Decorate mode types with active value and set to this.modes
     this.modes = controlModes.map((values) => {
       if (values.type === MODES.HVAC) {
         const sortedList: Array<Partial<ControlMode>> = []
@@ -343,7 +324,6 @@ export default class SimpleThermostat extends LitElement {
     const lang = this._hass.selectedLanguage || this._hass.language
     const key = `${prefix}${label}`
     const translations = this._hass.resources[lang]
-
     return translations?.[key] ?? label
   }
 
@@ -353,8 +333,7 @@ export default class SimpleThermostat extends LitElement {
       warnings.push(html`
         <hui-warning>
           Decimals is set to 0 and step_size is lower than 1. Decrementing a
-          setpoint will likely not work. Change one of the settings to clear
-          this warning.
+          setpoint will likely not work.
         </hui-warning>
       `)
     }
@@ -374,10 +353,8 @@ export default class SimpleThermostat extends LitElement {
     } = entity
 
     const unit = this.getUnit()
-
     const stepLayout = this.config?.layout?.step ?? 'column'
     const row = stepLayout === 'row'
-
     const classes = [!this.header && 'no-header', action].filter((cx) => !!cx)
 
     let sensorsHtml
@@ -409,6 +386,7 @@ export default class SimpleThermostat extends LitElement {
           })
         : ''
     }
+
     return html`
       <ha-card class="${classes.join(' ')}">
         ${warnings}
@@ -428,7 +406,6 @@ export default class SimpleThermostat extends LitElement {
                 <ha-icon-button
                   ?disabled=${maxTemp !== null && value >= maxTemp}
                   class="thermostat-trigger"
-                  icon=${row ? ICONS.PLUS : ICONS.UP}
                   @click="${() => this.setTemperature(this.stepSize, field)}"
                 >
                   <ha-icon .icon=${row ? ICONS.PLUS : ICONS.UP}></ha-icon>
@@ -445,10 +422,10 @@ export default class SimpleThermostat extends LitElement {
                     ? html`<span class="current--unit">${unit}</span>`
                     : nothing}
                 </h3>
+
                 <ha-icon-button
                   ?disabled=${minTemp !== null && value <= minTemp}
                   class="thermostat-trigger"
-                  icon=${row ? ICONS.MINUS : ICONS.DOWN}
                   @click="${() => this.setTemperature(-this.stepSize, field)}"
                 >
                   <ha-icon .icon=${row ? ICONS.MINUS : ICONS.DOWN}></ha-icon>
@@ -473,7 +450,6 @@ export default class SimpleThermostat extends LitElement {
 
   toggleEntityChanged = (ev: Event) => {
     if (!this.header || !this?.header?.toggle) return
-
     const el = ev.target as HTMLInputElement
     this._hass.callService(
       'homeassistant',
@@ -489,7 +465,6 @@ export default class SimpleThermostat extends LitElement {
     const previousValue = this._values[field]
     const newValue = Number(previousValue) + change
     const { decimals } = this.config
-
     this._values = {
       ...this._values,
       [field]: +formatNumber(newValue, { decimals }),
@@ -515,8 +490,6 @@ export default class SimpleThermostat extends LitElement {
     })
   }
 
-  // The height of your card. Home Assistant uses this to automatically
-  // distribute all cards over the available columns.
   getCardSize() {
     return 3
   }
