@@ -3,31 +3,35 @@ on:
   push:
     branches:
       - master
-      - next
-      - beta
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    env:
+      # This clears the warning you received
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
+          node-version: 24
       - name: Install dependencies
         run: |
           yarn install
           yarn build
-
-      - name: Release
+      - name: Create Release Manually
+        # If semantic-release is being stubborn, this creates a manual entry
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/simple-thermostat.js
+            simple-thermostat.js
+          tag_name: v2.5.5-beta
+          name: Release for HA 2026.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
-        
+          
