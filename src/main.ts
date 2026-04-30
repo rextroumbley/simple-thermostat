@@ -320,11 +320,16 @@ export default class SimpleThermostat extends LitElement {
     }
   }
 
-  localize = (label: string, prefix = '') => {
-    const lang = this._hass.selectedLanguage || this._hass.language
-    const key = `${prefix}${label}`
-    const translations = this._hass.resources[lang]
-    return translations?.[key] ?? label
+localize = (label: string, prefix = '') => {
+    const lang = this._hass.selectedLanguage || this._hass.language || 'en';
+    const key = `${prefix}${label}`;
+    
+    // Defensive check: if resources or the language key doesn't exist, return the label
+    if (this._hass.resources && this._hass.resources[lang]) {
+      return this._hass.resources[lang][key] || label;
+    }
+    
+    return label;
   }
 
   render({ _hide, _values, _updatingValues, config, entity } = this) {
