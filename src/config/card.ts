@@ -79,10 +79,12 @@ interface CardConfig {
 /**
  * Built-in compact styling (replaces the card_mod overrides).
  * The card is transparent while `action_entity` (defaults to `entity`)
- * reports hvac_action idle.
+ * reports hvac_action idle. `stepper_pull` tightens the chevrons.
  */
 type CompactConfig = {
   action_entity?: string
+  /** Extra px to pull each stepper chevron toward the value */
+  stepper_pull?: number
 }
 
 export { CardConfig }

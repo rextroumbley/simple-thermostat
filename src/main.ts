@@ -371,6 +371,10 @@ localize = (label: string, prefix = '') => {
     const unit = this.getUnit()
     const stepLayout = this.config?.layout?.step ?? 'column'
     const row = stepLayout === 'row'
+    const stepperPull =
+      typeof this.config.compact === 'object'
+        ? Number(this.config.compact.stepper_pull) || 0
+        : 0
     const classes = [
       !this.header && 'no-header',
       action,
@@ -409,7 +413,12 @@ localize = (label: string, prefix = '') => {
     }
 
     return html`
-      <ha-card class="${classes.join(' ')}">
+      <ha-card
+        class="${classes.join(' ')}"
+        style="${stepperPull
+          ? `--st-compact-stepper-pull: ${stepperPull}px`
+          : nothing}"
+      >
         ${warnings}
         ${renderHeader({
           header: this.header,
