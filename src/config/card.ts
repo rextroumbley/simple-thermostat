@@ -73,6 +73,16 @@ interface CardConfig {
     temperature?: string
     state?: string
   }
+  compact?: boolean | CompactConfig
+}
+
+/**
+ * Built-in compact styling (replaces the card_mod overrides).
+ * The card is transparent while `action_entity` (defaults to `entity`)
+ * reports hvac_action idle.
+ */
+type CompactConfig = {
+  action_entity?: string
 }
 
 export { CardConfig }

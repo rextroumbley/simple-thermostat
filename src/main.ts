@@ -121,6 +121,8 @@ export default class SimpleThermostat extends LitElement {
   _updatingValues: boolean = false
   @property()
   _hide = DEFAULT_HIDE
+  @property()
+  _compactIdle: boolean = false
 
   _debouncedSetTemperature = debounce(
     (values: object) => {
@@ -178,6 +180,15 @@ export default class SimpleThermostat extends LitElement {
     }
 
     this.header = parseHeader(this.config.header, entity, hass)
+
+    if (this.config.compact) {
+      const actionEntity =
+        (typeof this.config.compact === 'object' &&
+          this.config.compact.action_entity) ||
+        this.config.entity
+      this._compactIdle =
+        hass.states[actionEntity]?.attributes?.hvac_action === 'idle'
+    }
     this.service = parseService(this.config?.service ?? false)
 
     const attributes = entity.attributes
@@ -360,7 +371,12 @@ localize = (label: string, prefix = '') => {
     const unit = this.getUnit()
     const stepLayout = this.config?.layout?.step ?? 'column'
     const row = stepLayout === 'row'
-    const classes = [!this.header && 'no-header', action].filter((cx) => !!cx)
+    const classes = [
+      !this.header && 'no-header',
+      action,
+      this.config.compact && 'compact',
+      this.config.compact && this._compactIdle && 'compact-idle',
+    ].filter((cx) => !!cx)
 
     let sensorsHtml
     if (this.config.version === 3) {

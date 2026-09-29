@@ -160,6 +160,33 @@ header {
 .thermostat-trigger {
   padding: 0px;
 }
+
+/* Compact mode: built-in version of the old card_mod overrides */
+ha-card.compact {
+  --st-font-size-xl: 20px;
+  --st-font-size-l: 20px;
+  --st-font-size-m: 0px;
+  --st-font-size-title: 14px;
+  --st-font-size-sensors: 14px;
+  --st-spacing: 0px;
+  border: 0px;
+}
+ha-card.compact.compact-idle {
+  background: transparent;
+}
+ha-card.compact .current-wrapper {
+  gap: 0px;
+}
+ha-card.compact .current--value {
+  margin: 0px;
+  padding: 0px;
+  line-height: 0.8;
+}
+ha-card.compact ha-icon-button {
+  margin-top: -12px;
+  margin-bottom: -12px;
+  transform: scale(0.85);
+}
 .clickable {
   cursor: pointer;
 }
