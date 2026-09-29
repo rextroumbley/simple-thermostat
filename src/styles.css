@@ -170,6 +170,9 @@ ha-card.compact {
   --st-font-size-sensors: 14px;
   --st-spacing: 0px;
   border: 0px;
+  /* Give back the height stepper_pull removes, so only the chevron gap shrinks */
+  padding-top: var(--st-compact-stepper-pull, 0px);
+  padding-bottom: var(--st-compact-stepper-pull, 0px);
 }
 ha-card.compact.compact-idle {
   background: transparent;
