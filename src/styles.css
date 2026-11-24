@@ -154,6 +154,10 @@ header {
     color: var(--error-color);
   }
 }
+/* Pending setpoint: color only, never change size or layout */
+h3.updating {
+  color: var(--error-color);
+}
 .current--unit {
   font-size: var(--st-font-size-m, var(--ha-font-size-xl));
 }

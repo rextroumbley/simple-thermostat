@@ -443,9 +443,7 @@ localize = (label: string, prefix = '') => {
 
                 <h3
                   @click=${() => this.openEntityPopover()}
-                  class="current--value ${_updatingValues
-                    ? 'updating'
-                    : nothing}"
+                  class=${_updatingValues ? 'updating' : nothing}
                 >
                   ${formatNumber(value, config)}
                   ${showUnit
